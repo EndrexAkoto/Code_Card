@@ -5,17 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tech Quiz App</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Flip card styling */
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 200px;
+            perspective: 1000px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .flip-card-front {
+            background-color: #f7fafc;
+        }
+
+        .flip-card-back {
+            background-color: #f7fafc;
+            transform: rotateY(180deg);
+        }
+
+        .correct {
+            background-color: #34D399; /* Green for correct */
+        }
+
+        .incorrect {
+            background-color: #F87171; /* Red for incorrect */
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans flex justify-center items-center h-screen">
+<body class="bg-gradient-to-r from-blue-500 to-purple-600 font-sans flex justify-center items-center h-screen">
     <div class="w-full max-w-lg p-6 bg-white rounded-lg shadow-md">
         <!-- Language Selection Step -->
         <div id="languageSelection" class="text-center">
             <h2 class="text-2xl font-semibold text-gray-800">Select a Programming Language</h2>
             <p class="mt-2 text-lg text-gray-600">Choose a language to proceed to the quiz questions.</p>
             <div class="mt-4 flex justify-center space-x-4">
-                <button id="jsBtn" class="px-6 py-3 bg-blue-600 text-white rounded-md">JavaScript</button>
-                <button id="pyBtn" class="px-6 py-3 bg-green-600 text-white rounded-md">Python</button>
-                <button id="cBtn" class="px-6 py-3 bg-red-600 text-white rounded-md">C</button>
+                <button id="jsBtn" class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-500">JavaScript</button>
+                <button id="pyBtn" class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-500">Python</button>
+                <button id="cBtn" class="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-500">C</button>
             </div>
         </div>
 
@@ -28,14 +78,14 @@
                 <input type="text" id="userAnswer" class="w-3/4 p-2 border border-gray-300 rounded-md text-lg focus:outline-none" placeholder="Type your answer">
             </div>
             <div class="text-center mt-4">
-                <button id="submitAnswer" class="px-4 py-2 bg-blue-600 text-white rounded-md">Submit Answer</button>
+                <button id="submitAnswer" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500">Submit Answer</button>
             </div>
             <div id="feedback" class="text-center mt-4 text-lg font-medium text-gray-500"></div>
             <div class="mt-4 text-center">
                 <span id="attemptsLeft" class="text-lg text-gray-600">Attempts Left: 3</span>
             </div>
             <div id="nextButton" class="hidden mt-6 text-center">
-                <button class="px-4 py-2 bg-blue-600 text-white rounded-md">Next Question</button>
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500">Next Question</button>
             </div>
         </div>
     </div>
@@ -87,8 +137,17 @@
             const question = questions[selectedLanguage][currentQuestionIndex];
             const questionCard = document.getElementById('questionCard');
             questionCard.innerHTML = `
-                <h3 class="text-xl font-semibold text-gray-800">Question ${currentQuestionIndex + 1}</h3>
-                <p class="mt-2 text-lg text-gray-600">${question.question}</p>
+                <div class="flip-card">
+                    <div class="flip-card-inner" id="flipCardInner">
+                        <div class="flip-card-front">
+                            <h3 class="text-xl font-semibold text-gray-800">Question ${currentQuestionIndex + 1}</h3>
+                            <p class="mt-2 text-lg text-gray-600">${question.question}</p>
+                        </div>
+                        <div class="flip-card-back" id="flipCardBack">
+                            <p class="text-lg text-white"></p>
+                        </div>
+                    </div>
+                </div>
             `;
             document.getElementById('feedback').textContent = '';
             document.getElementById('userAnswer').value = '';
@@ -109,22 +168,25 @@
             const feedback = document.getElementById('feedback');
             const attemptsLeft = document.getElementById('attemptsLeft');
             const nextButton = document.getElementById('nextButton');
+            const flipCardBack = document.getElementById('flipCardBack');
+            const flipCardInner = document.getElementById('flipCardInner');
             if (attempts > 0) {
                 if (answer.toLowerCase() === correctAnswer.toLowerCase()) {
-                    feedback.textContent = "Correct!";
-                    feedback.classList.add("text-green-500");
-                    feedback.classList.remove("text-gray-500");
+                    flipCardBack.textContent = "Correct!";
+                    flipCardBack.classList.add('correct');
+                    flipCardBack.classList.remove('incorrect');
+                    flipCardInner.style.transform = "rotateY(180deg)";
                     nextButton.classList.remove("hidden");
                     submitAnswerButton.disabled = true; // Disable submit after correct answer
                 } else {
                     attempts--;
-                    feedback.textContent = "Try Again!";
-                    feedback.classList.add("text-red-500");
-                    feedback.classList.remove("text-gray-500");
+                    flipCardBack.textContent = "Incorrect! The correct answer is: " + correctAnswer;
+                    flipCardBack.classList.add('incorrect');
+                    flipCardBack.classList.remove('correct');
+                    flipCardInner.style.transform = "rotateY(180deg)";
                     attemptsLeft.textContent = `Attempts Left: ${attempts}`;
                     
                     if (attempts === 0) {
-                        feedback.textContent = `The correct answer is: ${correctAnswer}`;
                         nextButton.classList.remove("hidden");
                         submitAnswerButton.disabled = true; // Disable submit when out of attempts
                     }
@@ -139,9 +201,9 @@
             if (currentQuestionIndex < questions[selectedLanguage].length) {
                 loadQuestion();
                 nextButton.classList.add('hidden');
-                submitAnswerButton.disabled = false; // Enable submit for the next question
+                submitAnswerButton.disabled = false; // Enable submit button for next question
             } else {
-                nextButton.textContent = "End of Quiz";
+                alert('Congratulations! You have completed the quiz.');
             }
         });
     </script>
