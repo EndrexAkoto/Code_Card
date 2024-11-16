@@ -27,5 +27,5 @@ Dependancies
 - 
 
 Conclusion
-this Flashcard Quiz Application is fun and intrerative way to learn new information. With its user-friendly interface and engaging features, it aims to enhance the learning exprience for users of all ages. Enjoy quizzing yourself and improving your knowledge!
+- This Flashcard Quiz Application is fun and intrerative way to learn new information. With its user-friendly interface and engaging features, it aims to enhance the learning exprience for users of all ages. Enjoy quizzing yourself and improving your knowledge!
 
