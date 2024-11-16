@@ -18,12 +18,12 @@ Technologies
 - MySqLite: For storing questions and answers for simplicity.
 
 -> Delopyment
-- 
+- vs
 
 Dependancies
 -> Backend
 - Express: For building the server
--Body-parser: To parse incoming request bodies.
+- Body-parser: To parse incoming request bodies.
 - 
 
 Conclusion
