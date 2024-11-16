@@ -145,7 +145,6 @@
             loadQuestion();
         }
 
-        // Load question and options dynamically
         function loadQuestion() {
             const question = questions[selectedLanguage][currentQuestionIndex];
             const questionCard = document.getElementById('questionCard');
@@ -172,15 +171,15 @@
                 </button>`).join("");
 
             document.querySelectorAll('.option-btn').forEach(btn => {
-                btn.addEventListener('click', () => validateAnswer(btn.dataset.answer));
+                btn.addEventListener('click', () => validateAnswer(btn));
             });
 
             document.getElementById('nextButton').classList.add('hidden');
             document.getElementById('attemptsLeft').textContent = `Attempts Left: ${attempts}`;
         }
 
-        // Validate answer
-        function validateAnswer(answer) {
+        function validateAnswer(button) {
+            const answer = button.dataset.answer;
             const question = questions[selectedLanguage][currentQuestionIndex];
             const correctAnswer = question.correctAnswer;
             const flipCardBack = document.getElementById('flipCardBack');
@@ -193,12 +192,12 @@
                 flipCardBack.classList.remove('incorrect');
                 flipCardInner.style.transform = "rotateY(180deg)";
                 document.getElementById('nextButton').classList.remove('hidden');
+                disableOptions();
             } else {
                 attempts--;
                 if (attempts > 0) {
                     flipCardBack.textContent = "Incorrect! Try again.";
                     flipCardBack.classList.add('incorrect');
-                    flipCardBack.classList.remove('correct');
                     flipCardInner.style.transform = "rotateY(180deg)";
                     setTimeout(() => {
                         flipCardInner.style.transform = "rotateY(0deg)";
@@ -206,22 +205,28 @@
                 } else {
                     flipCardBack.textContent = `Incorrect! The correct answer is: ${correctAnswer}`;
                     flipCardBack.classList.add('incorrect');
-                    flipCardBack.classList.remove('correct');
                     flipCardInner.style.transform = "rotateY(180deg)";
                     document.getElementById('nextButton').classList.remove('hidden');
+                    disableOptions();
                 }
             }
-            attemptsLeft.textContent = `Attempts Left: ${attempts}`;
+
+            attemptsLeft.textContent = `Attempts Left: ${Math.max(attempts, 0)}`;
         }
 
-        // Move to next question
-        const nextButton = document.getElementById('nextButton');
-        nextButton.addEventListener('click', () => {
+        function disableOptions() {
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+            });
+        }
+
+        document.getElementById('nextButton').addEventListener('click', () => {
             currentQuestionIndex++;
             if (currentQuestionIndex < questions[selectedLanguage].length) {
                 loadQuestion();
             } else {
-                alert('Quiz completed! Well done!');
+                alert("Quiz Complete!");
             }
         });
     </script>
