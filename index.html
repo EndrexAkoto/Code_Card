@@ -227,8 +227,18 @@
                 loadQuestion();
             } else {
                 alert("Quiz Complete!");
+                // Redirect back to home page (language selection screen)
+                resetQuiz();
+                languageSelectionDiv.classList.remove('hidden');
+                quizSectionDiv.classList.add('hidden');
             }
         });
+
+        function resetQuiz() {
+            selectedLanguage = null;
+            currentQuestionIndex = 0;
+            attempts = 3;
+        }
     </script>
 </body>
 </html>
