@@ -27,6 +27,9 @@
             <div class="flex justify-center">
                 <input type="text" id="userAnswer" class="w-3/4 p-2 border border-gray-300 rounded-md text-lg focus:outline-none" placeholder="Type your answer">
             </div>
+            <div class="text-center mt-4">
+                <button id="submitAnswer" class="px-4 py-2 bg-blue-600 text-white rounded-md">Submit Answer</button>
+            </div>
             <div id="feedback" class="text-center mt-4 text-lg font-medium text-gray-500"></div>
             <div class="mt-4 text-center">
                 <span id="attemptsLeft" class="text-lg text-gray-600">Attempts Left: 3</span>
@@ -94,12 +97,10 @@
         }
 
         // Handle User Answer Submission
-        const userAnswerInput = document.getElementById('userAnswer');
-        userAnswerInput.addEventListener('input', (e) => {
-            if (e.key === 'Enter') {
-                let userAnswer = e.target.value.trim();
-                validateAnswer(userAnswer);
-            }
+        const submitAnswerButton = document.getElementById('submitAnswer');
+        submitAnswerButton.addEventListener('click', () => {
+            const userAnswer = document.getElementById('userAnswer').value.trim();
+            if (userAnswer) validateAnswer(userAnswer);
         });
 
         // Validate the User's Answer
@@ -114,6 +115,7 @@
                     feedback.classList.add("text-green-500");
                     feedback.classList.remove("text-gray-500");
                     nextButton.classList.remove("hidden");
+                    submitAnswerButton.disabled = true; // Disable submit after correct answer
                 } else {
                     attempts--;
                     feedback.textContent = "Try Again!";
@@ -124,6 +126,7 @@
                     if (attempts === 0) {
                         feedback.textContent = `The correct answer is: ${correctAnswer}`;
                         nextButton.classList.remove("hidden");
+                        submitAnswerButton.disabled = true; // Disable submit when out of attempts
                     }
                 }
             }
@@ -136,6 +139,7 @@
             if (currentQuestionIndex < questions[selectedLanguage].length) {
                 loadQuestion();
                 nextButton.classList.add('hidden');
+                submitAnswerButton.disabled = false; // Enable submit for the next question
             } else {
                 nextButton.textContent = "End of Quiz";
             }
