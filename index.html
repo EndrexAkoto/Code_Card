@@ -22,10 +22,6 @@
             transform-style: preserve-3d;
         }
 
-        .flip-card:hover .flip-card-inner {
-            transform: rotateY(180deg);
-        }
-
         .flip-card-front, .flip-card-back {
             position: absolute;
             width: 100%;
@@ -74,13 +70,9 @@
             <div id="questionCard">
                 <!-- Question will be inserted dynamically here -->
             </div>
-            <div class="flex justify-center">
-                <input type="text" id="userAnswer" class="w-3/4 p-2 border border-gray-300 rounded-md text-lg focus:outline-none" placeholder="Type your answer">
+            <div id="options" class="space-y-4">
+                <!-- Options will be inserted dynamically here -->
             </div>
-            <div class="text-center mt-4">
-                <button id="submitAnswer" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500">Submit Answer</button>
-            </div>
-            <div id="feedback" class="text-center mt-4 text-lg font-medium text-gray-500"></div>
             <div class="mt-4 text-center">
                 <span id="attemptsLeft" class="text-lg text-gray-600">Attempts Left: 3</span>
             </div>
@@ -91,26 +83,47 @@
     </div>
 
     <script>
-        let attempts = 3;
         let selectedLanguage = null;
         let currentQuestionIndex = 0;
-        
+        let attempts = 3;
+
         // Question bank
         const questions = {
             JavaScript: [
-                { question: "What does DOM stand for?", correctAnswer: "Document Object Model" },
-                { question: "Which company developed JavaScript?", correctAnswer: "Netscape" },
-                { question: "Is JavaScript a compiled or interpreted language?", correctAnswer: "Interpreted" }
+                { 
+                    question: "What does DOM stand for?", 
+                    options: ["Document Object Model", "Data Object Method", "Dynamic Object Model", "Data Operations Mechanism"],
+                    correctAnswer: "Document Object Model" 
+                },
+                { 
+                    question: "Which company developed JavaScript?", 
+                    options: ["Microsoft", "Google", "Netscape", "Sun Microsystems"],
+                    correctAnswer: "Netscape" 
+                }
             ],
             Python: [
-                { question: "What is the default extension of a Python file?", correctAnswer: ".py" },
-                { question: "Which Python library is used for data manipulation?", correctAnswer: "Pandas" },
-                { question: "Is Python statically typed or dynamically typed?", correctAnswer: "Dynamically typed" }
+                { 
+                    question: "What is the default extension of a Python file?", 
+                    options: [".py", ".python", ".txt", ".exe"],
+                    correctAnswer: ".py" 
+                },
+                { 
+                    question: "Which Python library is used for data manipulation?", 
+                    options: ["NumPy", "Matplotlib", "Pandas", "Seaborn"],
+                    correctAnswer: "Pandas" 
+                }
             ],
             C: [
-                { question: "What does 'C' stand for in the C programming language?", correctAnswer: "C is named after its predecessor, B" },
-                { question: "Which company developed C?", correctAnswer: "Bell Labs" },
-                { question: "What is the file extension for C source code?", correctAnswer: ".c" }
+                { 
+                    question: "What does 'C' stand for in C programming?", 
+                    options: ["Control", "Compiler", "C is named after its predecessor, B", "Code"],
+                    correctAnswer: "C is named after its predecessor, B" 
+                },
+                { 
+                    question: "Which company developed C?", 
+                    options: ["Microsoft", "Apple", "Bell Labs", "Intel"],
+                    correctAnswer: "Bell Labs" 
+                }
             ]
         };
 
@@ -132,10 +145,13 @@
             loadQuestion();
         }
 
-        // Load question based on the selected language
+        // Load question and options dynamically
         function loadQuestion() {
             const question = questions[selectedLanguage][currentQuestionIndex];
             const questionCard = document.getElementById('questionCard');
+            const optionsDiv = document.getElementById('options');
+            attempts = 3;
+
             questionCard.innerHTML = `
                 <div class="flip-card">
                     <div class="flip-card-inner" id="flipCardInner">
@@ -149,49 +165,53 @@
                     </div>
                 </div>
             `;
-            document.getElementById('feedback').textContent = '';
-            document.getElementById('userAnswer').value = '';
-            document.getElementById('attemptsLeft').textContent = `Attempts Left: 3`;
-            attempts = 3; // Reset attempts for each question
+
+            optionsDiv.innerHTML = question.options.map((option, index) => `
+                <button class="w-full px-4 py-2 bg-gray-100 text-left rounded-md hover:bg-blue-100 option-btn" data-answer="${option}">
+                    ${String.fromCharCode(65 + index)}. ${option}
+                </button>`).join("");
+
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', () => validateAnswer(btn.dataset.answer));
+            });
+
+            document.getElementById('nextButton').classList.add('hidden');
+            document.getElementById('attemptsLeft').textContent = `Attempts Left: ${attempts}`;
         }
 
-        // Handle User Answer Submission
-        const submitAnswerButton = document.getElementById('submitAnswer');
-        submitAnswerButton.addEventListener('click', () => {
-            const userAnswer = document.getElementById('userAnswer').value.trim();
-            if (userAnswer) validateAnswer(userAnswer);
-        });
-
-        // Validate the User's Answer
+        // Validate answer
         function validateAnswer(answer) {
-            const correctAnswer = questions[selectedLanguage][currentQuestionIndex].correctAnswer;
-            const feedback = document.getElementById('feedback');
-            const attemptsLeft = document.getElementById('attemptsLeft');
-            const nextButton = document.getElementById('nextButton');
+            const question = questions[selectedLanguage][currentQuestionIndex];
+            const correctAnswer = question.correctAnswer;
             const flipCardBack = document.getElementById('flipCardBack');
             const flipCardInner = document.getElementById('flipCardInner');
-            if (attempts > 0) {
-                if (answer.toLowerCase() === correctAnswer.toLowerCase()) {
-                    flipCardBack.textContent = "Correct!";
-                    flipCardBack.classList.add('correct');
-                    flipCardBack.classList.remove('incorrect');
-                    flipCardInner.style.transform = "rotateY(180deg)";
-                    nextButton.classList.remove("hidden");
-                    submitAnswerButton.disabled = true; // Disable submit after correct answer
-                } else {
-                    attempts--;
-                    flipCardBack.textContent = "Incorrect! The correct answer is: " + correctAnswer;
+            const attemptsLeft = document.getElementById('attemptsLeft');
+
+            if (answer === correctAnswer) {
+                flipCardBack.textContent = "Correct!";
+                flipCardBack.classList.add('correct');
+                flipCardBack.classList.remove('incorrect');
+                flipCardInner.style.transform = "rotateY(180deg)";
+                document.getElementById('nextButton').classList.remove('hidden');
+            } else {
+                attempts--;
+                if (attempts > 0) {
+                    flipCardBack.textContent = "Incorrect! Try again.";
                     flipCardBack.classList.add('incorrect');
                     flipCardBack.classList.remove('correct');
                     flipCardInner.style.transform = "rotateY(180deg)";
-                    attemptsLeft.textContent = `Attempts Left: ${attempts}`;
-                    
-                    if (attempts === 0) {
-                        nextButton.classList.remove("hidden");
-                        submitAnswerButton.disabled = true; // Disable submit when out of attempts
-                    }
+                    setTimeout(() => {
+                        flipCardInner.style.transform = "rotateY(0deg)";
+                    }, 1000);
+                } else {
+                    flipCardBack.textContent = `Incorrect! The correct answer is: ${correctAnswer}`;
+                    flipCardBack.classList.add('incorrect');
+                    flipCardBack.classList.remove('correct');
+                    flipCardInner.style.transform = "rotateY(180deg)";
+                    document.getElementById('nextButton').classList.remove('hidden');
                 }
             }
+            attemptsLeft.textContent = `Attempts Left: ${attempts}`;
         }
 
         // Move to next question
@@ -200,10 +220,8 @@
             currentQuestionIndex++;
             if (currentQuestionIndex < questions[selectedLanguage].length) {
                 loadQuestion();
-                nextButton.classList.add('hidden');
-                submitAnswerButton.disabled = false; // Enable submit button for next question
             } else {
-                alert('Congratulations! You have completed the quiz.');
+                alert('Quiz completed! Well done!');
             }
         });
     </script>
