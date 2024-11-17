@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Quiz App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Flip card styling */
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 200px;
+            perspective: 1000px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .flip-card-front {
+            background-color: #f7fafc;
+        }
+
+        .flip-card-back {
+            background-color: #f7fafc;
+            transform: rotateY(180deg);
+        }
+
+        .correct {
+            background-color: #34D399; /* Green for correct */
+        }
+
+        .incorrect {
+            background-color: #F87171; /* Red for incorrect */
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-r from-blue-500 to-purple-600 font-sans flex justify-center items-center h-screen">
+    <div class="w-full max-w-lg p-6 bg-white rounded-lg shadow-md">
+        <!-- Language Selection Step -->
+        <div id="languageSelection" class="text-center">
+            <h2 class="text-2xl font-semibold text-gray-800">Select a Programming Language</h2>
+            <p class="mt-2 text-lg text-gray-600">Choose a language to proceed to the quiz questions.</p>
+            <div class="mt-4 flex justify-center space-x-4">
+                <button id="jsBtn" class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-500">JavaScript</button>
+                <button id="pyBtn" class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-500">Python</button>
+                <button id="cBtn" class="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-500">C</button>
+            </div>
+        </div>
+
+        <!-- Quiz Questions (Initially Hidden) -->
+        <div id="quizSection" class="hidden space-y-6">
+            <div id="questionCard">
+                <!-- Question will be inserted dynamically here -->
+            </div>
+            <div class="flex justify-center">
+                <input type="text" id="userAnswer" class="w-3/4 p-2 border border-gray-300 rounded-md text-lg focus:outline-none" placeholder="Type your answer">
+            </div>
+            <div class="text-center mt-4">
+                <button id="submitAnswer" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500">Submit Answer</button>
+            </div>
+            <div id="feedback" class="text-center mt-4 text-lg font-medium text-gray-500"></div>
+            <div class="mt-4 text-center">
+                <span id="attemptsLeft" class="text-lg text-gray-600">Attempts Left: 3</span>
+            </div>
+            <div id="nextButton" class="hidden mt-6 text-center">
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500">Next Question</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let attempts = 3;
+        let selectedLanguage = null;
+        let currentQuestionIndex = 0;
+        
+        // Question bank
+        const questions = {
+            JavaScript: [
+                { question: "What does DOM stand for?", correctAnswer: "Document Object Model" },
+                { question: "Which company developed JavaScript?", correctAnswer: "Netscape" },
+                { question: "Is JavaScript a compiled or interpreted language?", correctAnswer: "Interpreted" }
+            ],
+            Python: [
+                { question: "What is the default extension of a Python file?", correctAnswer: ".py" },
+                { question: "Which Python library is used for data manipulation?", correctAnswer: "Pandas" },
+                { question: "Is Python statically typed or dynamically typed?", correctAnswer: "Dynamically typed" }
+            ],
+            C: [
+                { question: "What does 'C' stand for in the C programming language?", correctAnswer: "C is named after its predecessor, B" },
+                { question: "Which company developed C?", correctAnswer: "Bell Labs" },
+                { question: "What is the file extension for C source code?", correctAnswer: ".c" }
+            ]
+        };
+
+        // Show language selection
+        const languageSelectionDiv = document.getElementById('languageSelection');
+        const quizSectionDiv = document.getElementById('quizSection');
+        const jsBtn = document.getElementById('jsBtn');
+        const pyBtn = document.getElementById('pyBtn');
+        const cBtn = document.getElementById('cBtn');
+
+        jsBtn.addEventListener('click', () => selectLanguage('JavaScript'));
+        pyBtn.addEventListener('click', () => selectLanguage('Python'));
+        cBtn.addEventListener('click', () => selectLanguage('C'));
+
+        function selectLanguage(language) {
+            selectedLanguage = language;
+            languageSelectionDiv.classList.add('hidden');
+            quizSectionDiv.classList.remove('hidden');
+            loadQuestion();
+        }
+
+        // Load question based on the selected language
+        function loadQuestion() {
+            const question = questions[selectedLanguage][currentQuestionIndex];
+            const questionCard = document.getElementById('questionCard');
+            questionCard.innerHTML = `
+                <div class="flip-card">
+                    <div class="flip-card-inner" id="flipCardInner">
+                        <div class="flip-card-front">
+                            <h3 class="text-xl font-semibold text-gray-800">Question ${currentQuestionIndex + 1}</h3>
+                            <p class="mt-2 text-lg text-gray-600">${question.question}</p>
+                        </div>
+                        <div class="flip-card-back" id="flipCardBack">
+                            <p class="text-lg text-white"></p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('userAnswer').value = '';
+            document.getElementById('attemptsLeft').textContent = `Attempts Left: 3`;
+            attempts = 3; // Reset attempts for each question
+        }
+
+        // Handle User Answer Submission
+        const submitAnswerButton = document.getElementById('submitAnswer');
+        submitAnswerButton.addEventListener('click', () => {
+            const userAnswer = document.getElementById('userAnswer').value.trim();
+            if (userAnswer) validateAnswer(userAnswer);
+        });
+
+        // Validate the User's Answer
+        function validateAnswer(answer) {
+            const correctAnswer = questions[selectedLanguage][currentQuestionIndex].correctAnswer;
+            const feedback = document.getElementById('feedback');
+            const attemptsLeft = document.getElementById('attemptsLeft');
+            const nextButton = document.getElementById('nextButton');
+            const flipCardBack = document.getElementById('flipCardBack');
+            const flipCardInner = document.getElementById('flipCardInner');
+            if (attempts > 0) {
+                if (answer.toLowerCase() === correctAnswer.toLowerCase()) {
+                    flipCardBack.textContent = "Correct!";
+                    flipCardBack.classList.add('correct');
+                    flipCardBack.classList.remove('incorrect');
+                    flipCardInner.style.transform = "rotateY(180deg)";
+                    nextButton.classList.remove("hidden");
+                    submitAnswerButton.disabled = true; // Disable submit after correct answer
+                } else {
+                    attempts--;
+                    flipCardBack.textContent = "Incorrect! The correct answer is: " + correctAnswer;
+                    flipCardBack.classList.add('incorrect');
+                    flipCardBack.classList.remove('correct');
+                    flipCardInner.style.transform = "rotateY(180deg)";
+                    attemptsLeft.textContent = `Attempts Left: ${attempts}`;
+                    
+                    if (attempts === 0) {
+                        nextButton.classList.remove("hidden");
+                        submitAnswerButton.disabled = true; // Disable submit when out of attempts
+                    }
+                }
+            }
+        }
+
+        // Move to next question
+        const nextButton = document.getElementById('nextButton');
+        nextButton.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions[selectedLanguage].length) {
+                loadQuestion();
+                nextButton.classList.add('hidden');
+                submitAnswerButton.disabled = false; // Enable submit button for next question
+            } else {
+                alert('Congratulations! You have completed the quiz.');
+            }
+        });
+    </script>
+</body>
+</html>
