@@ -53,7 +53,17 @@
     </style>
 </head>
 <body class="bg-gradient-to-r from-blue-500 to-purple-600 font-sans flex justify-center items-center h-screen">
-    <div class="w-full max-w-lg p-6 bg-white rounded-lg shadow-md">
+    <!-- Landing Page -->
+    <div id="landingPage" class="text-center">
+        <h1 class="text-4xl font-bold text-white mb-4">Welcome to Code Cards</h1>
+        <p class="text-lg text-white mb-6">Test your knowledge of programming languages!</p>
+        <button id="continueButton" class="px-6 py-3 bg-yellow-500 text-white rounded-md hover:bg-yellow-400">
+            Continue
+        </button>
+    </div>
+
+    <!-- Home Page (Hidden Initially) -->
+    <div id="homePage" class="hidden w-full max-w-lg p-6 bg-white rounded-lg shadow-md">
         <!-- Language Selection Step -->
         <div id="languageSelection" class="text-center">
             <h2 class="text-2xl font-semibold text-gray-800">Select a Programming Language</h2>
@@ -127,12 +137,21 @@
             ]
         };
 
-        // Show language selection
+        // Elements
+        const landingPage = document.getElementById('landingPage');
+        const homePage = document.getElementById('homePage');
         const languageSelectionDiv = document.getElementById('languageSelection');
         const quizSectionDiv = document.getElementById('quizSection');
+        const continueButton = document.getElementById('continueButton');
         const jsBtn = document.getElementById('jsBtn');
         const pyBtn = document.getElementById('pyBtn');
         const cBtn = document.getElementById('cBtn');
+
+        // Show Home Page when "Continue" button is clicked
+        continueButton.addEventListener('click', () => {
+            landingPage.classList.add('hidden');
+            homePage.classList.remove('hidden');
+        });
 
         jsBtn.addEventListener('click', () => selectLanguage('JavaScript'));
         pyBtn.addEventListener('click', () => selectLanguage('Python'));
@@ -227,7 +246,6 @@
                 loadQuestion();
             } else {
                 alert("Quiz Complete!");
-                // Redirect back to home page (language selection screen)
                 resetQuiz();
                 languageSelectionDiv.classList.remove('hidden');
                 quizSectionDiv.classList.add('hidden');
