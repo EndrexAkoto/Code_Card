@@ -63,7 +63,7 @@
     </div>
 
     <!-- Home Page (Hidden Initially) -->
-    <div id="homePage" class="hidden w-full max-w-lg p-6 bg-white rounded-lg shadow-md">
+    <div id="homePage" class="hidden w-full max-w-lg p-6 bg-white rounded-lg shadow-md relative">
         <!-- Language Selection Step -->
         <div id="languageSelection" class="text-center">
             <h2 class="text-2xl font-semibold text-gray-800">Select a Programming Language</h2>
@@ -76,7 +76,13 @@
         </div>
 
         <!-- Quiz Questions (Initially Hidden) -->
-        <div id="quizSection" class="hidden space-y-6">
+        <div id="quizSection" class="hidden space-y-6 relative">
+            <!-- Back Button -->
+            <button id="backButton" 
+                class="absolute top-[-3rem] left-1 px-4 py-2  text-gray-800 rounded-md hover:underline">
+                ← Back
+            </button>
+
             <div id="questionCard">
                 <!-- Question will be inserted dynamically here -->
             </div>
@@ -88,6 +94,12 @@
             </div>
             <div id="nextButton" class="hidden mt-6 text-center">
                 <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500">Next Question</button>
+            </div>
+            <!-- End Quiz Button -->
+            <div class="absolute bottom-4 right-4">
+                <button id="endQuizButton" class="px-4 py-[-2]  bg-red-600 text-white rounded-md hover:bg-red-500">
+                    End Quiz
+                </button>
             </div>
         </div>
     </div>
@@ -146,6 +158,8 @@
         const jsBtn = document.getElementById('jsBtn');
         const pyBtn = document.getElementById('pyBtn');
         const cBtn = document.getElementById('cBtn');
+        const backButton = document.getElementById('backButton');
+        const endQuizButton = document.getElementById('endQuizButton');
 
         // Show Home Page when "Continue" button is clicked
         continueButton.addEventListener('click', () => {
@@ -161,8 +175,24 @@
             selectedLanguage = language;
             languageSelectionDiv.classList.add('hidden');
             quizSectionDiv.classList.remove('hidden');
+            backButton.classList.remove('hidden'); // Show Back button
             loadQuestion();
         }
+
+        backButton.addEventListener('click', () => {
+            quizSectionDiv.classList.add('hidden');
+            languageSelectionDiv.classList.remove('hidden');
+            backButton.classList.add('hidden'); // Hide Back button
+            resetQuiz();
+        });
+
+        endQuizButton.addEventListener('click', () => {
+            alert("Quiz Ended! Thank you for participating.");
+            resetQuiz();
+            languageSelectionDiv.classList.remove('hidden');
+            quizSectionDiv.classList.add('hidden');
+            backButton.classList.add('hidden'); // Hide Back button
+        });
 
         function loadQuestion() {
             const question = questions[selectedLanguage][currentQuestionIndex];
@@ -249,6 +279,7 @@
                 resetQuiz();
                 languageSelectionDiv.classList.remove('hidden');
                 quizSectionDiv.classList.add('hidden');
+                backButton.classList.add('hidden'); // Hide Back button
             }
         });
 
