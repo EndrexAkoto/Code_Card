@@ -1,20 +1,24 @@
-# Ignore node_modules
-node_modules/
-
-# Ignore build and production files (frontend build and backend build)
-frontend/build/
+# Ignore frontend and backend node_modules
+frontend/node_modules/
 backend/node_modules/
 
-# Environment variable files (e.g., .env files)
+# Ignore build folders (frontend build is moved to the backend)
+frontend/build/
+backend/build/
+
+# Ignore environment variable files (e.g., .env files)
 .env
 
-# Logs and debugging files
+# Log files
 *.log
-*.debug
+npm-debug.log*
 
-# Operating system-specific files
+# OS-specific files
 .DS_Store
-Thumbs.db
 
-# Ignore the db.js file containing sensitive credentials
-db.js
+# Ignore editor-specific files
+.vscode/
+.idea/
+
+# Ignore database file (e.g., db.js with credentials)
+backend/db.js
