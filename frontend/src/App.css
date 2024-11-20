@@ -1,0 +1,153 @@
+/* General Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #eef2f3; /* Soft neutral background */
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  text-align: center;
+  padding: 20px;
+}
+
+h1 {
+  color: #003366; /* Dark blue for main heading */
+}
+
+h2 {
+  color: #004080; /* Slightly lighter blue */
+  margin-bottom: 20px;
+}
+
+/* Language Selection */
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  cursor: pointer;
+  margin: 10px auto;
+  padding: 12px 20px;
+  width: 200px;
+  background-color: #007bff; /* Blue for buttons */
+  color: white;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+ul li:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Language Styling with Different Colors */
+.language {
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+
+
+/* Flip Card Styles */
+.flip-card {
+  width: 300px;
+  margin: 20px auto;
+  perspective: 1000px; /* Perspective for 3D effect */
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.flip-card-inner.flipped {
+  transform: rotateY(180deg); /* Flip the card */
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+.correct {
+  color: green;
+  font-weight: bold;
+}
+
+.incorrect {
+  color: red;
+  font-weight: bold;
+}
+
+/* Answer Buttons */
+.answer-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.answer-container button {
+  padding: 10px 15px;
+  border: 2px solid #007bff;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 70px;
+}
+
+.answer-container button:hover {
+  background-color: #0056b3;
+}
+
+.answer-container .selected {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+/* Navigation Buttons */
+.navigation-buttons {
+  margin: 20px 0;
+}
+
+.navigation-buttons button {
+  padding: 10px 20px;
+  margin: 0 5px;
+  border: none;
+  background-color: #6c757d;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.navigation-buttons button:hover {
+  background-color: #5a6268;
+}
+
+/* Error Message */
+.error {
+  color: red;
+  font-weight: bold;
+}
