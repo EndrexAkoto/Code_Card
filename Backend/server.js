@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors')
-const path = require('path')  // Added to serve React build
+const path = require('path')
 const app = express()
 const port = 5000
 
@@ -8,7 +8,8 @@ const port = 5000
 app.use(cors())
 
 // Middleware for JSON parsing
-app.use(express.json()) 
+app.use(express.json())
+app.use(express.urlencoded({ extended: true })) // If necessary for form submissions
 
 // Import quizRoutes
 const quizRoutes = require('./routes/quizRoutes')
@@ -17,7 +18,7 @@ const quizRoutes = require('./routes/quizRoutes')
 app.use('/api', quizRoutes)
 
 // Serve static files from the React app (production build)
-app.use(express.static(path.join(__dirname, 'frontend/build')))
+app.use(express.static(path.join(__dirname, '../frontend/build')))
 
 // Basic route for testing
 app.get('/', (req, res) => {
@@ -26,7 +27,7 @@ app.get('/', (req, res) => {
 
 // For all other routes, send the React index.html
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend', 'build', 'index.html'))
+    res.sendFile(path.join(__dirname, '../frontend', 'build', 'index.html'))
 })
 
 // Start the server

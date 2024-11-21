@@ -22,3 +22,7 @@ npm-debug.log*
 
 # Ignore database file (e.g., db.js with credentials)
 backend/db.js
+
+/project-root
+  /config
+    ca.pem  
