@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/db');  // Ensure the path is correct
+const db = require('../config/db.js');  // Ensure the path is correct
 
 // Helper function to execute the query and return a promise
 const executeQuery = (query, params) => {
